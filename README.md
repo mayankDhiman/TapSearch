@@ -24,3 +24,5 @@ _Heroku deployment is a bit buggy for some reasons, it might crash_, for running
 - Add the text by using "Add New" option in Navigation Bar
 - Once done, you will be able to search for some word.
 - Same way a PDF file can also be uploaded & used in it.
+
+![](tapsearchFinal.gif)
