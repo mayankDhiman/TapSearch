@@ -43,11 +43,6 @@
               </a>
           </li>
           <li class="nav-item">
-              <a class="nav-link" rel="tooltip" title="" data-placement="bottom" href="{{url_for('admin.eraseAllDocs')}}">
-                Clear Existing 
-              </a>
-          </li>          
-          <li class="nav-item">
             <li class="nav-item">
                 <a class="nav-link" rel="tooltip" title="" href="">
                   About
@@ -62,19 +57,8 @@
         <div class="container">
             <div class="col-md-8 ml-auto mr-auto">
                 <div class="text-center">
-                    <h1 class="title">Tap Search</h1>
-                    <h3>
-                        <div class="form-group has-default">
-                          <div class="text-center">
-                            <form class="form" method="POST" action="">
-                                {{ form.csrf_token }}
-                                {{ form.hidden_tag() }}  
-                                {{ form.query(class_="form-control") }}
-                              </div>
-                            </div>
-                          </h3>
-                          {{ form.submit(class_="btn btn-primary btn-round") }}
-                      </form>
+                    <h1 class="title">Yaay! All docs are cleared.</h1>
+                        <a class="btn btn-primary btn-primary" href="{{url_for('admin.landingPage')}}">Back to Search</a>
                 </div>
             </div>
         </div>

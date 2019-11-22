@@ -24,11 +24,8 @@ def landingPage():
         query = form.query.data
         if query:
             return redirect(url_for('admin.resultPage', query=query, invertedIndex=invertedIndex))
-    return render_template('index.html', form=form)
+    return render_template('index.html', form=form, Documents=Documents)
 
-def highlight_term(id, term, text):
-    replaced_text = text.replace(term, "\033[1;32;40m {term} \033[0;0m".format(term=term))
-    return "--- document {id}: {replaced}".format(id=id, replaced=replaced_text)
 
 @admin.route('/add-new', methods=['GET', 'POST'])
 def addNewPage():
@@ -47,7 +44,7 @@ def loadNewDocPage():
                 documents.append(document)
             for eachDocument in documents:
                 invertedIndex.index_document(eachDocument)
-            return redirect(url_for('admin.landingPage', form=queryForm))
+            return redirect(url_for('admin.landingPage'))
     return render_template('load-new-doc.html', form=newDocForm)
 
 
@@ -72,41 +69,54 @@ def loadNewPdfPage():
         device.close()
         retstr.close()
         return text
+    text = ''
     if request.method == "POST":
         print('aaa')
         print(request.files['file'])
         f = request.files['file']
-        # print(f)
         f.save(f.filename)
-    # text = convert_pdf_to_txt("project/tapsearch_sample.pdf")
-    invertedIndex.index_document(text, True)
-    form = QueryForm()
-    return redirect(url_for('admin.landingPage', form=form))
+        text = convert_pdf_to_txt(f.filename)
+    if text:
+        invertedIndex.index_document(text, True)
+    return redirect(url_for('admin.landingPage'))
 
 
 @admin.route('/<query>/search-results', methods=['POST', 'GET'])
 def resultPage(query):
     searchResults = []
     result = invertedIndex.lookup_query(query)
-    print(invertedIndex.index)    
     if result[0]:
         for term in result[1].keys():
             for appearance in result[1][term]:
                 document = Documents.query.filter_by(id=appearance.docId)[0].text              
-                # document = db.get(appearance.docId)
                 searchResults.append(document)
     else:
         print('No documents match your search')
     searchResults = list(set(searchResults))
     form = QueryForm()
     form.query.render_kw={"placeholder":query}
-    return render_template('search-results.html', form=form, searchResults=searchResults)
+    if searchResults:
+        return render_template('search-results.html', form=form, searchResults=searchResults)
+    else:
+        return render_template('no-docs-found.html')
 
 
 @admin.route('/view-all-docs', methods=['POST', 'GET'])
 def viewAllDocs():
     searchResults = []
-    for _, v in db.db.items():
-        if v['text']:
-            searchResults.append(v['text'])
-    return render_template('view-all-docs.html', searchResults=searchResults)
+    allDocs = Documents.query.all()
+    for doc in allDocs:
+        if doc.text:
+            searchResults.append(doc.text)
+    searchResults = list(set(searchResults))
+    print(searchResults)
+    if searchResults:
+        return render_template('view-all-docs.html', searchResults=searchResults)
+    else:
+        return render_template('no-docs-found.html')
+
+@admin.route('/erase-all-docs', methods=['POST', 'GET'])
+def eraseAllDocs():
+    Documents.query.delete()
+    db.session.commit()
+    return render_template('erase-all-docs.html')
