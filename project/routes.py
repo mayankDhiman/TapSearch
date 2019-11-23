@@ -1,21 +1,21 @@
-from flask import *
-from project import db
-from project.forms import QueryForm, NewDocForm
-from project.indexer import InvertedIndex
 from io import StringIO
+
+from flask import *
+# from project import db, invertedIndex
+from project.forms import QueryForm, NewDocForm
+from project.indexer import InvertedIndex, Database
+
+# PDF Miner imports
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
-from io import StringIO
-from project.model import Documents
 
 
 admin = Blueprint('admin',__name__)
 
-# db = Database()
-invertedIndex = InvertedIndex()
-
+db = Database()
+invertedIndex = InvertedIndex(db)
 
 @admin.route('/', methods=['POST', 'GET'])
 def landingPage():
@@ -24,16 +24,16 @@ def landingPage():
         query = form.query.data
         if query:
             return redirect(url_for('admin.resultPage', query=query, invertedIndex=invertedIndex))
-    return render_template('index.html', form=form, Documents=Documents)
+    return render_template('index.html', form=form)
 
 
 @admin.route('/add-new', methods=['GET', 'POST'])
 def addNewPage():
     return render_template('add-new.html')
 
+
 @admin.route('/load-new-doc', methods=['POST', 'GET'])
 def loadNewDocPage():
-    queryForm = QueryForm()
     newDocForm = NewDocForm()
     if newDocForm.validate_on_submit():
         document = newDocForm.document.data
@@ -71,8 +71,6 @@ def loadNewPdfPage():
         return text
     text = ''
     if request.method == "POST":
-        print('aaa')
-        print(request.files['file'])
         f = request.files['file']
         f.save(f.filename)
         text = convert_pdf_to_txt(f.filename)
@@ -88,15 +86,13 @@ def resultPage(query):
     if result[0]:
         for term in result[1].keys():
             for appearance in result[1][term]:
-                document = Documents.query.filter_by(id=appearance.docId)[0].text              
+                document = db.get(appearance.docId)
                 searchResults.append(document)
     else:
         print('No documents match your search')
     searchResults = list(set(searchResults))
-    form = QueryForm()
-    form.query.render_kw={"placeholder":query}
     if searchResults:
-        return render_template('search-results.html', form=form, searchResults=searchResults)
+        return render_template('search-results.html', searchResults=searchResults)
     else:
         return render_template('no-docs-found.html')
 
@@ -104,12 +100,9 @@ def resultPage(query):
 @admin.route('/view-all-docs', methods=['POST', 'GET'])
 def viewAllDocs():
     searchResults = []
-    allDocs = Documents.query.all()
-    for doc in allDocs:
-        if doc.text:
-            searchResults.append(doc.text)
+    for _, v in db.db.items():
+        searchResults.append(v)
     searchResults = list(set(searchResults))
-    print(searchResults)
     if searchResults:
         return render_template('view-all-docs.html', searchResults=searchResults)
     else:
@@ -117,6 +110,8 @@ def viewAllDocs():
 
 @admin.route('/erase-all-docs', methods=['POST', 'GET'])
 def eraseAllDocs():
-    Documents.query.delete()
-    db.session.commit()
+    db.db = dict()
+    invertedIndex.index = dict()
+    invertedIndex.db = db 
+    invertedIndex.uniqueID = 0   
     return render_template('erase-all-docs.html')
