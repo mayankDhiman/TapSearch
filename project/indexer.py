@@ -1,8 +1,8 @@
 
 import re
-import nltk
+# import nltk
 # from nltk.stem.snowball import EnglishStemmer
-from nltk.corpus import stopwords
+# from nltk.corpus import stopwords
 class Appearance:
     """
     Contains document's unique ID & the frequency with which a particular work occurs in a document.
