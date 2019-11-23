@@ -1,8 +1,11 @@
 
 import re
-# import nltk
-# from nltk.stem.snowball import EnglishStemmer
-# from nltk.corpus import stopwords
+"""
+import nltk
+from nltk.stem.snowball import EnglishStemmer
+from nltk.corpus import stopwords
+"""
+
 class Appearance:
     """
     Contains document's unique ID & the frequency with which a particular work occurs in a document.
@@ -40,9 +43,9 @@ class InvertedIndex:
             documentText -- {str} -- Textual part of a document
             isPDF -- {bool} -- True if a Document submitted is PDF 
         """
-        stop_words = set(stopwords.words('english'))
+        stop_words = ['ourselves', 'hers', 'between', 'yourself', 'but', 'again', 'there', 'about', 'once', 'during', 'out', 'very', 'having', 'with', 'they', 'own', 'an', 'be', 'some', 'for', 'do', 'its', 'yours', 'such', 'into', 'of', 'most', 'itself', 'other', 'off', 'is', 's', 'am', 'or', 'who', 'as', 'from', 'him', 'each', 'the', 'themselves', 'until', 'below', 'are', 'we', 'these', 'your', 'his', 'through', 'don', 'nor', 'me', 'were', 'her', 'more', 'himself', 'this', 'down', 'should', 'our', 'their', 'while', 'above', 'both', 'up', 'to', 'ours', 'had', 'she', 'all', 'no', 'when', 'at', 'any', 'before', 'them', 'same', 'and', 'been', 'have', 'in', 'will', 'on', 'does', 'yourselves', 'then', 'that', 'because', 'what', 'over', 'why', 'so', 'can', 'did', 'not', 'now', 'under', 'he', 'you', 'herself', 'has', 'just', 'where', 'too', 'only', 'myself', 'which', 'those', 'i', 'after', 'few', 'whom', 't', 'being', 'if', 'theirs', 'my', 'against', 'a', 'by', 'doing', 'it', 'how', 'further', 'was', 'here', 'than']
         simplifiedTokens = []
-        tokens = [token.lower() for token in nltk.word_tokenize(documentText)]
+        tokens = [token.lower() for token in documentText.split(' ')]
         for token in tokens:
             if token in stop_words:
                 continue
