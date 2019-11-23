@@ -1,8 +1,8 @@
 
 import re
 import nltk
-from nltk.stem.snowball import EnglishStemmer
-
+# from nltk.stem.snowball import EnglishStemmer
+from nltk.corpus import stopwords
 class Appearance:
     """
     Contains document's unique ID & the frequency with which a particular work occurs in a document.
@@ -40,11 +40,11 @@ class InvertedIndex:
             documentText -- {str} -- Textual part of a document
             isPDF -- {bool} -- True if a Document submitted is PDF 
         """
-        stopwords = nltk.corpus.stopwords.words('english')
+        stop_words = set(stopwords.words('english'))
         simplifiedTokens = []
         tokens = [token.lower() for token in nltk.word_tokenize(documentText)]
         for token in tokens:
-            if token in stopwords:
+            if token in stop_words:
                 continue
             simplifiedTokens.append(token)
         document = {'id' : self.uniqueID, 'text' : documentText}
