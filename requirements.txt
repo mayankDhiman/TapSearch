@@ -4,7 +4,7 @@ Flask-Migrate==2.3.1
 Flask-SQLAlchemy==2.3.2
 Flask-WTF==0.14.2
 gunicorn==20.0.0
-Jinja2==2.10.1
+Jinja2==2.11.3
 pdfminer==20191103
 pdfminer.six==20191110
 pluggy==0.9.0
