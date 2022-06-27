@@ -13,7 +13,7 @@ psycopg2-binary==2.7.4
 pyparsing==2.2.0
 pytest==4.3.0
 readme-renderer==24.0
-reportlab==3.5.12
+reportlab==3.5.55
 requests==2.22.0
 requests-toolbelt==0.9.1
 snowballstemmer==1.2.1
